@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Libertinus+Math&display=swap');
+@import "tailwindcss";
+
+*{
+  font-family: "Libertinus Math", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+body,
+#root {
+   height: 100%;
+   margin: 0;
+   padding: 0;
+   overflow: hidden;
+}
+
+/* Gaya untuk efek loading titik-titik */
+.dot-flashing {
+   position: relative;
+   width: 10px;
+   height: 10px;
+   border-radius: 5px;
+   background-color: #6c757d; /* Warna titik */
+   color: #6c757d;
+   animation: dot-flashing 1s infinite alternate;
+   animation-delay: 0s;
+}
+
+.dot-flashing::before,
+.dot-flashing::after {
+   content: "";
+   display: inline-block;
+   position: absolute;
+   top: 0;
+}
+
+.dot-flashing::before {
+   left: -15px;
+   width: 10px;
+   height: 10px;
+   border-radius: 5px;
+   background-color: #6c757d;
+   color: #6c757d;
+   animation: dot-flashing 1s infinite alternate;
+   animation-delay: 0.3s;
+}
+
+.dot-flashing::after {
+   left: 15px;
+   width: 10px;
+   height: 10px;
+   border-radius: 5px;
+   background-color: #6c757d;
+   color: #6c757d;
+   animation: dot-flashing 1s infinite alternate;
+   animation-delay: 0.6s;
+}
+
+@keyframes dot-flashing {
+   0% {
+      background-color: #6c757d;
+   }
+   50%,
+   100% {
+      background-color: #e2e8f0; /* Warna lebih terang saat berkedip */
+   }
+}
