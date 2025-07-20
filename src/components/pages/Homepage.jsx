@@ -352,7 +352,7 @@ const HomePage = () => {
         </header>
 
         {/* Area konten utama */}
-        <main className="flex-1 bg-[#A2AADB] overflow-hidden pt-20 mt-15 md:mt-0 md:pt-0">
+        <main className="flex-1 bg-[#A2AADB] overflow-hidden md:mt-0 md:pt-0">
           <div className="h-full flex flex-col p-3 md:p-6 lg:p-8">
             <div className="flex-1 overflow-hidden">
               {activeTab === "artikel" && (
