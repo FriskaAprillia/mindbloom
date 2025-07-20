@@ -129,7 +129,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen h-[100dvh] bg-gray-100 font-sans overflow-hidden">
+    <div className="flex flex-col md:flex-row h-[100dvh] bg-gray-100 font-sans overflow-hidden">
       {/* Header Mobile - Fixed position untuk menghindari masalah viewport */}
       <div className="md:hidden fixed top-0 left-0 right-0 p-3 bg-[#A2AADB] text-white flex justify-between items-center shadow-md z-40">
         <button
