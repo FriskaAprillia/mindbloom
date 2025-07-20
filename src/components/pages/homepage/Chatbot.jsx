@@ -62,10 +62,11 @@ const Chatbot = ({
          </div>
 
          {/* Message Input Area */}
-         <div className="p-4 border-t border-gray-200 bg-gray-50 flex items-center">
+         {/* Message Input Area */}
+         <div className="p-4 border-t border-gray-200 bg-gray-50 flex items-center gap-3">
             <input
                type="text"
-               className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+               className="flex-1 min-w-0 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                placeholder={placeholder}
                value={inputValue}
                onChange={handleInputChange}
@@ -73,7 +74,7 @@ const Chatbot = ({
             />
             <button
                onClick={handleSendMessage}
-               className="ml-3 p-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+               className="flex-shrink-0 p-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
                aria-label="Send message"
             >
                {/* Using an SVG for the upward arrow icon */}

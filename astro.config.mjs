@@ -10,9 +10,15 @@ import vercel from '@astrojs/vercel';
 // https://astro.build/config
 export default defineConfig({
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    server: {
+      allowedHosts: ['e64a9801dbc8.ngrok-free.app']
+    }
+    
+    
   },
 
   integrations: [react()],
-  adapter: vercel()
+  adapter: vercel(),
+  
 });

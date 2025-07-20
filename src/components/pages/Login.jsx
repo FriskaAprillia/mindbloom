@@ -4,13 +4,15 @@ import { navigate } from "astro:transitions/client";
 import { cekRoleUser } from "./../service/cekRole";
 
 export const Login = () => {
-  const primaryColor = "#d4bfd3"; // Warna ungu dari palet (paling atas)
-  const secondaryColor = "#EDDAEC"; // Warna ungu kedua dari palet
-  const lightPurpleColor = "#E9C6FA"; // Warna ungu muda ketiga dari palet
-  const lightestPinkColor = "#FDE2E2"; // Warna merah muda paling bawah dari palet
-  const textColor = "#4a4a4a"; // Abu-abu tua untuk teks utama
-  const lightTextColor = "#6b6b6b"; // Abu-abu lebih muda untuk teks sekunder
-  const buttonDarkColor = "#333333"; // Warna abu-abu gelap untuk tombol masuk
+  // Anda tidak menggunakan variabel warna ini secara langsung di JSX setelah mengganti dengan Tailwind classes,
+  // jadi Anda bisa menghapusnya jika tidak ada penggunaan lain.
+  // const primaryColor = "#d4bfd3";
+  // const secondaryColor = "#EDDAEC";
+  // const lightPurpleColor = "#E9C6FA";
+  // const lightestPinkColor = "#FDE2E2";
+  // const textColor = "#4a4a4a";
+  // const lightTextColor = "#6b6b6b";
+  // const buttonDarkColor = "#333333";
 
   // State untuk form input
   const [email, setEmail] = useState("");
@@ -51,22 +53,25 @@ export const Login = () => {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4"
+      className="min-h-screen flex items-center justify-center p-4 md:p-8 lg:p-12" // Tambah padding responsif
       style={{
         background: "linear-gradient(to bottom right, #FFF2E0, #C0C9EE)",
         fontFamily: "Inter, sans-serif",
       }}
     >
-      <div className="flex flex-col md:flex-row w-full max-w-6xl bg-white bg-opacity-90 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden">
+      <div className="flex flex-col md:flex-row w-full max-w-sm md:max-w-4xl lg:max-w-6xl // Sesuaikan max-w berdasarkan breakpoint
+      bg-white bg-opacity-90 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden">
         {/* Bagian Kiri: Welcome Message */}
         <div
-          className="w-full md:w-1/2 flex flex-col justify-center items-center text-center p-10 md:p-14"
+          className="w-full md:w-1/2 flex flex-col justify-center items-center text-center p-8 md:p-12 lg:p-16 // Sesuaikan padding
+          py-12 md:py-0 // Tambahkan padding vertikal untuk mobile, hapus di md
+          "
           style={{ backgroundColor: "#898AC4", color: "white" }}
         >
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 leading-tight"> {/* Ukuran teks responsif */}
             Senang bertemu kembali!
           </h1>
-          <p className="text-lg md:text-xl leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl leading-relaxed mt-2"> {/* Ukuran teks responsif */}
             Mari lanjutkan perjalananmu bersama MindBloom. Kami siap
             mendengarkan, kapan pun kamu butuh.
           </p>
@@ -75,19 +80,20 @@ export const Login = () => {
         {/* Form Login */}
         <form
           onSubmit={handleLogin}
-          className="w-full md:w-1/2 p-10 md:p-14 flex flex-col justify-center"
+          className="w-full md:w-1/2 p-8 md:p-12 lg:p-16 // Sesuaikan padding
+          flex flex-col justify-center"
         >
-          <h2 className="text-3xl font-bold mb-8 text-center text-[#6F72B2]">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-[#6F72B2]"> {/* Ukuran teks responsif */}
             Masuk
           </h2>
-          <div className="w-full max-w-md mx-auto space-y-5">
+          <div className="w-full max-w-sm mx-auto space-y-4 sm:space-y-5"> {/* Sesuaikan max-w dan spasi */}
             {/* Email */}
             <input
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-[#C0C9EE] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#898AC4]"
+              className="w-full px-4 py-2 sm:py-3 border border-[#C0C9EE] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#898AC4] text-base" // Ukuran padding dan teks responsif
               required
             />
 
@@ -98,7 +104,7 @@ export const Login = () => {
                 placeholder="Kata sandi"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-[#C0C9EE] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#898AC4] pr-10"
+                className="w-full px-4 py-2 sm:py-3 border border-[#C0C9EE] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#898AC4] pr-10 text-base" // Ukuran padding dan teks responsif
                 required
               />
               <button
@@ -130,12 +136,12 @@ export const Login = () => {
 
             {/* Alert */}
             {successMessage && (
-              <div className="bg-green-100 text-green-700 px-4 py-3 rounded-lg">
+              <div className="bg-green-100 text-green-700 px-4 py-3 rounded-lg text-sm"> {/* Ukuran teks responsif */}
                 {successMessage}
               </div>
             )}
             {errorMessage && (
-              <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg">
+              <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg text-sm"> {/* Ukuran teks responsif */}
                 {errorMessage}
               </div>
             )}
@@ -143,13 +149,13 @@ export const Login = () => {
             {/* Button Login */}
             <button
               type="submit"
-              className="w-full bg-[#A2AADB] hover:bg-[#898AC4] text-white font-semibold py-3 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105"
+              className="w-full bg-[#A2AADB] hover:bg-[#898AC4] text-white font-semibold py-3 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105 text-lg" // Ukuran teks responsif
             >
               Masuk
             </button>
 
             {/* Lupa Password */}
-            <p className="text-right text-sm mt-2">
+            <p className="text-right text-xs sm:text-sm mt-2"> {/* Ukuran teks responsif */}
               <a
                 href="/autentikasi/lupa-password"
                 className="text-[#6F72B2] font-medium hover:underline"
@@ -159,7 +165,7 @@ export const Login = () => {
             </p>
 
             {/* Register */}
-            <p className="text-center text-sm mt-4 text-gray-600">
+            <p className="text-center text-xs sm:text-sm mt-4 text-gray-600"> {/* Ukuran teks responsif */}
               Belum punya akun?{" "}
               <a
                 href="/autentikasi/regis"
