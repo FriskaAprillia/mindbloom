@@ -30,7 +30,7 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(
          JSON.stringify({
             message: "edukasi berhasil ditambahkan!",
-            artikel: inserted,
+            edukasi: inserted,
          }),
          { status: 201, headers: { "Content-Type": "application/json" } }
       );

@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
 import { getUserLogged, logoutUser } from "../service/getUserLogged";
 import { navigate } from "astro:transitions/client";
-import { sendMessageToChatbot } from "../../lib/chat";
+// import { sendMessageToChatbot } from "../../lib/chat"; // KOMEN ATAU HAPUS INI
+
 import DaftarArtikel from "./homepage/DaftarArtikel";
 import Edukasi from "./homepage/Edukasi";
 import WhiteNoise from "./homepage/WhiteNoise";
 import Chatbot from "./homepage/Chatbot";
 
+// Definisi Tipe untuk ChatMessage tidak lagi diperlukan di JSX,
+// tapi kita akan tetap menggunakan struktur objeknya.
+
 const systemPrompt = {
-  role: "model",
+  role: "model", // System prompt biasanya dianggap sebagai bagian dari "model" dalam percakapan AI
   parts: [
     {
       text: `
@@ -76,28 +80,102 @@ const HomePage = () => {
     setIsSidebarOpen(false);
   };
 
+  // --- START: handleSendMessage yang diperbarui ---
   const handleSendMessage = async (userMessage) => {
     const newUserMessage = { sender: "user", text: userMessage };
+    // Langsung tampilkan pesan pengguna di UI
     setMessages((prev) => [...prev, newUserMessage]);
 
+    // Persiapkan riwayat obrolan untuk dikirim ke backend
+    // `chatHistory` adalah state yang harus Anda kelola
+    // agar konsisten dengan format objek yang diterima oleh APIRoute.
     const updatedHistory = [
-      ...chatHistory,
+      ...(chatHistory || []), // Pastikan chatHistory tidak null/undefined
       { role: "user", parts: [{ text: userMessage }] },
     ];
-    const systemPrompt = chatHistory[0];
+
+    // Logika pemotongan riwayat (system prompt dan 9 pesan terakhir)
+    // Ini tetap sama karena logika ini cocok dengan apa yang dikirim ke Gemini.
+    // Perhatikan bahwa `systemPrompt` di sini adalah variabel global yang sudah Anda definisikan.
     const historyWithoutSystem = updatedHistory.slice(1);
     const last9 = historyWithoutSystem.slice(-9);
-    const slicedHistory = [systemPrompt, ...last9];
+    const slicedHistoryToSend = [systemPrompt, ...last9];
 
-    const botReply = await sendMessageToChatbot(userMessage, slicedHistory);
-    const newBotMessage = { sender: "bot", text: botReply };
-    setMessages((prev) => [...prev, newBotMessage]);
+    try {
+      // Panggil Astro APIRoute Anda menggunakan fetch
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userMessage: userMessage, // Pesan pengguna yang akan dikirim
+          chatHistory: slicedHistoryToSend, // Riwayat obrolan yang sudah dipotong
+        }),
+      });
 
-    setChatHistory([
-      ...updatedHistory,
-      { role: "model", parts: [{ text: botReply }] },
-    ]);
+      // Periksa apakah respons dari APIRoute berhasil
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("❌ Error from Astro APIRoute:", errorData.error);
+        // Tampilkan pesan error ke pengguna jika API bermasalah
+        setMessages((prev) => [
+          ...prev,
+          { sender: "bot", text: "Maaf, terjadi kesalahan saat menghubungi AI. Silakan coba lagi." },
+        ]);
+        return; // Hentikan eksekusi jika ada error
+      }
+
+      const data = await response.json();
+      const botReply = data.response; // Ambil respons dari properti 'response' yang kita set di APIRoute
+
+      // Tampilkan balasan bot di UI
+      const newBotMessage = { sender: "bot", text: botReply };
+      setMessages((prev) => [...prev, newBotMessage]);
+
+      // Perbarui state `chatHistory` dengan balasan bot untuk percakapan selanjutnya
+      // Penting: tambahkan pesan user dan pesan model yang baru ke chatHistory
+      setChatHistory((prev) => [
+        ...prev,
+        { role: "user", parts: [{ text: userMessage }] }, // Tambahkan pesan user yang baru
+        { role: "model", parts: [{ text: botReply }] }, // Tambahkan balasan bot yang baru
+      ]);
+    } catch (error) {
+      console.error("❌ Error sending message to Astro APIRoute:", error);
+      // Tampilkan pesan error jika ada masalah jaringan atau lainnya
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: "Maaf, terjadi masalah jaringan. Coba periksa koneksi Anda." },
+      ]);
+    }
   };
+  // --- END: handleSendMessage yang diperbarui ---
+
+  // handleSendMessage lama (dikomentari)
+  /*
+    const handleSendMessage = async (userMessage) => {
+        const newUserMessage = { sender: "user", text: userMessage };
+        setMessages((prev) => [...prev, newUserMessage]);
+
+        const updatedHistory = [
+            ...chatHistory,
+            { role: "user", parts: [{ text: userMessage }] },
+        ];
+        const systemPrompt = chatHistory[0];
+        const historyWithoutSystem = updatedHistory.slice(1);
+        const last9 = historyWithoutSystem.slice(-9);
+        const slicedHistory = [systemPrompt, ...last9];
+
+        const botReply = await sendMessageToChatbot(userMessage, slicedHistory);
+        const newBotMessage = { sender: "bot", text: botReply };
+        setMessages((prev) => [...prev, newBotMessage]);
+
+        setChatHistory([
+            ...updatedHistory,
+            { role: "model", parts: [{ text: botReply }] },
+        ]);
+    };
+    */
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -120,9 +198,8 @@ const HomePage = () => {
       case "artikel":
         return "Artikel";
       case "edukasi":
-        return "Edukasi";
-      case "White Noise":
-        return "White Noise";
+      case "White Noise": // Perbaiki typo jika White Noise seharusnya tanpa spasi
+        return "White Noise"; // Jika 'White Noise' dimaksudkan untuk ditampilkan sebagai White Noise
       default:
         return "MindBloom";
     }
@@ -184,11 +261,11 @@ const HomePage = () => {
       {/* Sidebar */}
       <div
         className={`fixed inset-y-0 left-0 w-64 bg-[#C0C9EE] text-black
-                    transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
-                    md:relative md:translate-x-0 
-                    transition-transform duration-300 ease-in-out 
-                    z-35 md:z-auto flex flex-col shadow-lg md:shadow-none
-                    pt-16 md:pt-0`} // Tambah padding top untuk mobile
+                     transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+                     md:relative md:translate-x-0
+                     transition-transform duration-300 ease-in-out
+                     z-35 md:z-auto flex flex-col shadow-lg md:shadow-none
+                     pt-16 md:pt-0`} // Tambah padding top untuk mobile
       >
         {/* Profil pengguna */}
         <div className="flex items-center p-4 border-b border-gray-300 flex-shrink-0">
@@ -320,8 +397,8 @@ const HomePage = () => {
         {/* Tombol logout */}
         <div className="p-4 border-t border-gray-300 flex-shrink-0">
           <button
-            className="flex items-center justify-center w-full py-2.5 px-4 bg-red-600 text-white rounded-lg 
-                       hover:bg-red-700 transition duration-200 font-medium"
+            className="flex items-center justify-center w-full py-2.5 px-4 bg-red-600 text-white rounded-lg
+                                 hover:bg-red-700 transition duration-200 font-medium"
             onClick={handleLogout}
           >
             <svg

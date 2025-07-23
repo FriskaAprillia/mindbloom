@@ -1,3 +1,4 @@
+// src/components/pages/AdminDashboard.jsx
 import React from "react";
 import { useState, useEffect } from "react";
 import { logoutUser } from "../service/getUserLogged";
@@ -225,16 +226,16 @@ const AdminDashboard = () => {
     try {
       if (activeTab === "edukasi") {
         console.log("data", data);
-        await insertEdukasi(data);
-        setListEdukasi((prev) => [...prev, data]);
+        const insertedEdukasi = await insertEdukasi(data); // Capture the returned data with ID
+        setListEdukasi((prev) => [...prev, insertedEdukasi]); // Use the inserted data
         setIsModalInsertKontenOpen(false);
         alert("✅ Konten berhasil ditambahkan!");
         setTotalEdukasiCount((prev) => prev + 1);
       } else if (activeTab === "white-noise") {
         console.log("data", data);
 
-        await insertWhiteNoise(data);
-        setListWhiteNoise((prev) => [...prev, data]);
+        const insertedWhiteNoise = await insertWhiteNoise(data); // Capture the returned data with ID
+        setListWhiteNoise((prev) => [...prev, insertedWhiteNoise]); // Use the inserted data
         setIsModalInsertKontenOpen(false);
         alert("✅ Konten berhasil ditambahkan!");
         setTotalWhiteNoiseCount((prev) => prev + 1);
