@@ -1,48 +1,37 @@
-# Astro Starter Kit: Basics
+# 🧠 Mindbloom
 
-```sh
-npm create astro@latest -- --template basics
-```
+**Mindbloom** adalah platform konseling dan edukasi kesehatan mental berbasis web yang dirancang untuk membantu pengguna menjaga kesehatan jiwa dengan lebih mudah dan nyaman. Ditenagai AI chatbot, artikel informatif, dan suara white noise yang menenangkan, Mindbloom hadir sebagai teman virtual yang selalu ada di sisi kamu.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+## 🚀 Fitur Utama
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+- 🤖 **Chatbot Konseling**: Asisten AI yang siap mendengarkan dan memberi respon berdasarkan prinsip kesehatan mental positif.
+- 📚 **Artikel Edukatif**: Baca berbagai topik mulai dari self-care, stres, burnout, hingga teknik mindfulness.
+- 🔊 **White Noise Player**: Dengarkan suara yang menenangkan seperti hujan, angin, dan lainnya untuk membantu relaksasi.
+- 🔐 **Login Aman**: Autentikasi menggunakan Supabase.
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+## 🛠️ Tech Stack
 
-## 🚀 Project Structure
+- ⚛️ [React](https://reactjs.org/)
+- 🚀 [Astro](https://astro.build/)
+- 💨 [Tailwind CSS](https://tailwindcss.com/)
+- 🐬 [Supabase](https://supabase.io/)
 
-Inside of your Astro project, you'll see the following folders and files:
+## 🧑‍💻 Cara Menjalankan Proyek
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+```bash
+# 1. Clone repository
+git clone https://github.com/kamu/mindbloom.git
+cd mindbloom
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+# 2. Install dependencies
+npm install
 
-## 🧞 Commands
+# 3. Jalankan lokal
+npm run dev
+Pastikan kamu sudah mengatur environment variable Supabase dan API jika diperlukan.
 
-All commands are run from the root of the project, from a terminal:
+🌐 Live Demo
+Coba langsung di sini: mindbloom-ai.vercel.app
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+📄 Lisensi
+Proyek ini open-source dan bebas digunakan untuk pengembangan lebih lanjut. Silakan fork, eksplorasi, dan kembangkan versi kamu sendiri ✨
