@@ -31,7 +31,4 @@ npm run dev
 Pastikan kamu sudah mengatur environment variable Supabase dan API jika diperlukan.
 ```
 ## 🌐 Live Demo
-Coba langsung di sini: mindbloom-ai.vercel.app
-
-## 📄 Lisensi
-Proyek ini open-source dan bebas digunakan untuk pengembangan lebih lanjut. Silakan fork, eksplorasi, dan kembangkan versi kamu sendiri ✨
+Coba langsung di sini: https://mindbloom-ai.vercel.app
