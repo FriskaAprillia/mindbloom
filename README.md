@@ -30,8 +30,8 @@ npm install
 npm run dev
 Pastikan kamu sudah mengatur environment variable Supabase dan API jika diperlukan.
 
-🌐 Live Demo
+## 🌐 Live Demo
 Coba langsung di sini: mindbloom-ai.vercel.app
 
-📄 Lisensi
+## 📄 Lisensi
 Proyek ini open-source dan bebas digunakan untuk pengembangan lebih lanjut. Silakan fork, eksplorasi, dan kembangkan versi kamu sendiri ✨
