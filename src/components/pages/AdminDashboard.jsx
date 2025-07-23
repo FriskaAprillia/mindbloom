@@ -3,6 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { logoutUser } from "../service/getUserLogged";
 import { navigate } from "astro:transitions/client";
+import { supabaseClient } from "../../lib/supabaseClient";// Pastikan path ini sesuai dengan struktur proyek Anda
 import { fetchUsers, deleteUser } from "../../utils/api/pengguna";
 import {
   fetchArtikelCount,
@@ -52,6 +53,7 @@ const AdminDashboard = () => {
   const [listPengguna, setListPengguna] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [isModalInsertKontenOpen, setIsModalInsertKontenOpen] = useState(false);
   const [dataToEdit, setDataToEdit] = useState(null);
@@ -89,6 +91,7 @@ const AdminDashboard = () => {
     // redirect ke halaman login, misalnya:
     navigate("autentikasi/login");
   };
+   
   useEffect(() => {
     if (editingArtikel !== null) {
       setIsModalArtikelOpen(true);
@@ -404,6 +407,20 @@ const AdminDashboard = () => {
       isMounted = false;
     };
   }, [activeTab, isWhiteNoiseLoaded]);
+   useEffect(() => {
+    const checkUser = async () => {
+      const { data, error } = await supabaseClient.auth.getUser();
+      if (!data.user) {
+        navigate("/autentikasi/login"); // atau window.location.href = "/login";
+      } else {
+        console.log("User is authenticated:", data.user);
+        setLoading(false);
+      }
+    };
+    checkUser();
+  }, []);
+
+  if (loading) return <p>Checking auth...</p>;
 
   return (
     // Kontainer utama aplikasi, menggunakan flexbox untuk tata letak
