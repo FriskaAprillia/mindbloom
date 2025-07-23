@@ -29,7 +29,7 @@ npm install
 # 3. Jalankan lokal
 npm run dev
 Pastikan kamu sudah mengatur environment variable Supabase dan API jika diperlukan.
-
+```
 ## 🌐 Live Demo
 Coba langsung di sini: mindbloom-ai.vercel.app
 
