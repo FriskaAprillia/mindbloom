@@ -1,3 +1,4 @@
+// src/pages/api/white-noise/tambah-wn.json.ts
 import { supabaseAdmin } from "../../../lib/supabaseServer";
 import type { APIRoute } from "astro";
 
@@ -9,10 +10,10 @@ export const POST: APIRoute = async ({ request }) => {
 
       const { namawhitenoise, fileaudio, fotowhitenoise } = data;
 
-      // Generate ID artikel
+      // Generate ID whitenoise
       const idwhitenoise = generateId(5); // ID acak 5 karakter
 
-      // Simpan ke tabel 'artikel' dan ambil kembali data yang baru dimasukkan
+      // Simpan ke tabel 'white_noise' dan ambil kembali data yang baru dimasukkan
       const { data: inserted, error } = await supabaseAdmin
          .from("white_noise")
          .insert([
@@ -24,14 +25,14 @@ export const POST: APIRoute = async ({ request }) => {
             },
          ])
          .select()
-         .single(); 
+         .single(); // ambil baris yang baru dimasukkan
 
       if (error) throw error;
 
       return new Response(
          JSON.stringify({
             message: "whitenoise berhasil ditambahkan!",
-            whitenoise: inserted,
+            white_noise: inserted, // FIX: Mengubah 'whitenoise' menjadi 'white_noise' agar konsisten
          }),
          { status: 201, headers: { "Content-Type": "application/json" } }
       );
@@ -39,7 +40,7 @@ export const POST: APIRoute = async ({ request }) => {
       console.error("Error:", error);
       return new Response(
          JSON.stringify({
-            message: "noise menambahkan whitenoise!",
+            message: "Gagal menambahkan whitenoise!",
          }),
          { status: 500, headers: { "Content-Type": "application/json" } }
       );

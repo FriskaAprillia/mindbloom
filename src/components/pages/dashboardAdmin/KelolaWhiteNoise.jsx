@@ -1,3 +1,4 @@
+// src/components/pages/dashboardAdmin/KelolaWhiteNoise.jsx
 import React from "react";
 
 const KelolaWhiteNoise = ({key, whiteNoises, onAddWhiteNoise, onEditWhiteNoise, onDeleteWhiteNoise}) => {
@@ -73,66 +74,71 @@ const KelolaWhiteNoise = ({key, whiteNoises, onAddWhiteNoise, onEditWhiteNoise, 
                   {whiteNoises && whiteNoises.length > 0 ? (
                      // Melakukan iterasi pada array whiteNoises untuk menampilkan setiap baris
                      whiteNoises.map((noise) => (
-                        <tr
-                           key={noise.idwhitenoise}
-                           className="border-b border-gray-200 hover:bg-gray-100"
-                        >
-                           <td className="py-3 px-6 text-left whitespace-nowrap">
-                              {noise.namawhitenoise}
-                           </td>
-                           <td className="py-3 px-6 text-left">
-                              <a
-                                 href={noise.fileaudio}
-                                 target="_blank"
-                                 rel="noopener noreferrer"
-                                 className="text-blue-500 hover:underline"
-                              >
-                                 {noise.fileaudio}
-                              </a>
-                           </td>
-                           <td className="py-3 px-6 text-left">
-                              {/* Menampilkan gambar kecil jika URL foto tersedia */}
-                              {noise.fotowhitenoise ? (
-                                 <img
-                                    src={noise.fotowhitenoise}
-                                    alt={noise.namawhitenoise}
-                                    className="w-12 h-12 object-cover rounded-md"
-                                    onError={(e) => {
-                                       e.target.onerror = null;
-                                       e.target.src =
-                                          "https://placehold.co/48x48/CCCCCC/FFFFFF?text=No+Image"; // Placeholder if image fails
-                                    }}
-                                 />
-                              ) : (
-                                 <span className="text-gray-500">No Image</span>
-                              )}
-                           </td>
-                           <td className="py-3 px-6 text-center flex justify-center space-x-2">
-                              <button
-                                 onClick={() => handleEdit(noise.idwhitenoise)}
-                                 className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-full transition duration-200 text-xs"
-                              >
-                                 Edit
-                              </button>
-                              <button
-                                 onClick={() => handleDelete(noise.idwhitenoise)}
-                                 className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-200 text-xs"
-                              >
-                                 Hapus
-                              </button>
-                           </td>
-                        </tr>
+                        // Add a conditional check here to ensure 'noise' is not undefined or null
+                        noise && (
+                           <tr
+                              key={noise.idwhitenoise}
+                              className="border-b border-gray-200 hover:bg-gray-100"
+                           >
+                              <td className="py-3 px-6 text-left whitespace-nowrap">
+                                 {noise.namawhitenoise}
+                              </td>
+                              <td className="py-3 px-6 text-left">
+                                 <a
+                                    href={noise.fileaudio}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-500 hover:underline"
+                                 >
+                                    {noise.fileaudio}
+                                 </a>
+                              </td>
+                              <td className="py-3 px-6 text-left">
+                                 {/* Menampilkan gambar kecil jika URL foto tersedia */}
+                                 {noise.fotowhitenoise ? (
+                                    <img
+                                       src={noise.fotowhitenoise}
+                                       alt={noise.namawhitenoise}
+                                       className="w-12 h-12 object-cover rounded-md"
+                                       onError={(e) => {
+                                          e.target.onerror = null;
+                                          e.target.src =
+                                             "https://placehold.co/48x48/CCCCCC/FFFFFF?text=No+Image"; // Placeholder if image fails
+                                       }}
+                                    />
+                                 ) : (
+                                    <span className="text-gray-500">No Image</span>
+                                 )}
+                              </td>
+                              <td className="py-3 px-6 text-center flex justify-center space-x-2">
+                                 <button
+                                    onClick={() => handleEdit(noise.idwhitenoise)}
+                                    className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-full transition duration-200 text-xs"
+                                 >
+                                    Edit
+                                 </button>
+                                 <button
+                                    onClick={() => handleDelete(noise.idwhitenoise)}
+                                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-200 text-xs"
+                                 >
+                                    Hapus
+                                 </button>
+                              </td>
+                           </tr>
+                        )
                      ))
                   ) : (
                      // Menampilkan pesan jika tidak ada data white noise
-                     <tr>
-                        <td
-                           colSpan="4"
-                           className="py-4 text-center text-gray-500"
-                        >
-                           Tidak ada data audio White Noise yang tersedia.
-                        </td>
-                     </tr>
+                     (
+                        <tr>
+                           <td
+                              colSpan="4"
+                              className="py-4 text-center text-gray-500"
+                           >
+                              Tidak ada data audio White Noise yang tersedia.
+                           </td>
+                        </tr>
+                     )
                   )}
                </tbody>
             </table>
