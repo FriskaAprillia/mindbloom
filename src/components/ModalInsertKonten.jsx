@@ -1,13 +1,12 @@
-// src/components/ModalInsertKonten.jsx (Pastikan path ke komponen ini benar)
-
+// src/components/ModalInsertKonten.jsx
 import React, { useState, useEffect } from "react";
 
-import { v4 as uuidv4 } from "uuid"; // Import uuid untuk nama file unik
+import { v4 as uuidv4 } from "uuid";
 import { supabaseClient } from "../lib/supabaseClient";
 
 // Komponen Input generik untuk teks
 const Input = (
-   { label, value, onChange, type = "text", required = false, name } // Tambahkan 'name' di sini
+   { label, value, onChange, type = "text", required = false, name }
 ) => (
    <div className="mb-4">
       <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -16,8 +15,8 @@ const Input = (
       </label>
       <input
          type={type}
-         name={name} // Teruskan prop 'name' ke elemen input HTML
-         className="shadow border rounded-lg w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+         name={name}
+         className="shadow border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
          value={value}
          onChange={onChange}
          required={required}
@@ -26,7 +25,7 @@ const Input = (
 );
 
 const Textarea = (
-   { label, value, onChange, required = false, name } // Tambahkan 'name' di sini
+   { label, value, onChange, required = false, name }
 ) => (
    <div className="mb-4">
       <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -35,8 +34,8 @@ const Textarea = (
       </label>
       <textarea
          rows={4}
-         name={name} // Teruskan prop 'name' ke elemen textarea HTML
-         className="shadow border rounded-lg w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+         name={name}
+         className="shadow border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
          value={value}
          onChange={onChange}
          required={required}
@@ -53,23 +52,53 @@ const ModalInsertKonten = ({
 }) => {
    const [formData, setFormData] = useState({
       judul: "",
-      link: "", // Untuk artikel
-      foto: "", // URL foto
-      audio: "", // URL audio
-      isi: "", // Untuk edukasi
+      link: "",
+      foto: "",
+      audio: "",
+      isi: "",
    });
 
-   const [audioFile, setAudioFile] = useState(null); // Objek File untuk audio
-   const [photoFile, setPhotoFile] = useState(null); // Objek File untuk foto
+   const [audioFile, setAudioFile] = useState(null);
+   const [photoFile, setPhotoFile] = useState(null);
+   const [youtubeThumbnail, setYoutubeThumbnail] = useState(null);
+   const [youtubeTitle, setYoutubeTitle] = useState("");
 
    const [error, setError] = useState("");
-   const [loading, setLoading] = useState(false); // Status loading saat submit
+   const [loading, setLoading] = useState(false);
 
-   // Efek untuk mengisi form saat modal dibuka atau editData berubah
+   const extractYoutubeId = (url) => {
+      const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+      const match = url.match(regex);
+      return match ? match[1] : null;
+   };
+
+   const generateYoutubeThumbnail = (url) => {
+      const videoId = extractYoutubeId(url);
+      if (videoId) {
+         return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      }
+      return null;
+   };
+
+   const extractYoutubeTitle = async (url) => {
+       try {
+        const response = await fetch(`/api/youtube/get-title.json?url=${encodeURIComponent(url)}`);
+        const data = await response.json();
+        if (response.ok && data.title) {
+          return data.title;
+        } else {
+          console.error("Gagal mengambil judul dari API:", data.error || "Unknown error");
+          return null;
+        }
+      } catch (error) {
+        console.error("Error fetching YouTube title:", error);
+        return null;
+      }
+   };
+
    useEffect(() => {
       if (isOpen) {
          if (editData) {
-            // Mode Edit: Isi form dengan data yang ada
             if (tipeKonten === "artikel") {
                setFormData({
                   judul: editData.judulartikel || "",
@@ -94,42 +123,58 @@ const ModalInsertKonten = ({
                   foto: "",
                   audio: "",
                });
+            } else if (tipeKonten === "video") {
+               setFormData({
+                  judul: editData.judulvideo || "",
+                  link: editData.urlvideo || "",
+                  foto: editData.fotovideo || "",
+                  audio: "",
+                  isi: "",
+               });
+               setYoutubeThumbnail(editData.fotovideo);
+               setYoutubeTitle(editData.judulvideo || "");
             }
-            // Reset file input saat mode edit (tidak otomatis terisi dari URL)
             setAudioFile(null);
             setPhotoFile(null);
          } else {
-            // Mode Tambah Baru: Kosongkan form
             setFormData({ judul: "", link: "", foto: "", audio: "", isi: "" });
             setAudioFile(null);
             setPhotoFile(null);
+            setYoutubeThumbnail(null);
+            setYoutubeTitle("");
          }
-         setError(""); // Reset error saat modal dibuka
+         setError("");
       }
    }, [isOpen, editData, tipeKonten]);
 
-   // Handler untuk input teks/URL
-   const handleInputChange = (e) => {
+   const handleInputChange = async (e) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
+      
+      if (name === "link" && tipeKonten === "video") {
+         setYoutubeThumbnail(generateYoutubeThumbnail(value));
+         const title = await extractYoutubeTitle(value);
+         if (title) {
+            setYoutubeTitle(title);
+         } else {
+            setYoutubeTitle("");
+         }
+      } else if (name === "judul" && tipeKonten === "video") {
+          setYoutubeTitle(value);
+      }
    };
 
-   // Handler untuk input file audio
    const handleAudioFileChange = (e) => {
       const file = e.target.files[0];
       setAudioFile(file);
-      // Kosongkan URL audio di formData saat file baru dipilih
-      // Ini penting agar logika upload tahu ada file baru yang harus diunggah
       if (file) {
          setFormData((prev) => ({ ...prev, audio: "" }));
       }
    };
 
-   // Handler untuk input file foto
    const handlePhotoFileChange = (e) => {
       const file = e.target.files[0];
       setPhotoFile(file);
-      // Kosongkan URL foto di formData saat file baru dipilih
       if (file) {
          setFormData((prev) => ({ ...prev, foto: "" }));
       }
@@ -140,12 +185,11 @@ const ModalInsertKonten = ({
       setError("");
       setLoading(true);
 
-      let finalAudioUrl = formData.audio; // Default: pakai URL yang sudah ada
-      let finalPhotoUrl = formData.foto; // Default: pakai URL yang sudah ada
+      let finalAudioUrl = formData.audio;
+      let finalPhotoUrl = formData.foto;
 
       try {
-         // 1. Validasi Awal & Penanganan Unggahan File
-         if (!formData.judul) {
+         if (!formData.judul && !youtubeTitle) {
             throw new Error("Judul wajib diisi.");
          }
 
@@ -153,19 +197,16 @@ const ModalInsertKonten = ({
             if (!formData.link) {
                throw new Error("Link Artikel wajib diisi.");
             }
-            // Unggah foto artikel jika ada file baru dan tidak ada URL foto yang sudah ada
             if (!formData.foto && !photoFile && !editData) {
-               // Jika tambah baru dan tidak ada foto
                throw new Error("Foto Artikel wajib diisi (file atau URL).");
             }
             if (photoFile) {
-               // Jika ada file foto baru untuk diunggah (baik tambah/edit)
                const photoFileName = `artikel-images/${uuidv4()}-${
                   photoFile.name
                }`;
                const { data: uploadData, error: uploadError } =
                   await supabaseClient.storage
-                     .from("content-images") // Ganti dengan nama bucket Anda untuk gambar artikel
+                     .from("content-images")
                      .upload(photoFileName, photoFile, {
                         cacheControl: "3600",
                      });
@@ -178,24 +219,20 @@ const ModalInsertKonten = ({
                finalPhotoUrl = publicUrlData.publicUrl;
             }
          } else if (tipeKonten === "white-noise") {
-            // Validasi & Unggah untuk White Noise
             if (!formData.audio && !audioFile && !editData) {
-               // Jika tambah baru dan tidak ada audio
                throw new Error("File Audio wajib diisi.");
             }
             if (!formData.foto && !photoFile && !editData) {
-               // Jika tambah baru dan tidak ada foto
                throw new Error("Foto White Noise wajib diisi.");
             }
 
-            // Unggah file audio jika ada yang baru
             if (audioFile) {
                const audioFileName = `white-noise-audios/${uuidv4()}-${
                   audioFile.name
                }`;
                const { data: uploadData, error: uploadError } =
                   await supabaseClient.storage
-                     .from("white-noise-audios") // Nama bucket audio Anda
+                     .from("white-noise-audios")
                      .upload(audioFileName, audioFile, {
                         cacheControl: "3600",
                      });
@@ -208,14 +245,13 @@ const ModalInsertKonten = ({
                finalAudioUrl = publicUrlData.publicUrl;
             }
 
-            // Unggah file foto jika ada yang baru
             if (photoFile) {
                const photoFileName = `white-noise-images/${uuidv4()}-${
                   photoFile.name
                }`;
                const { data: uploadData, error: uploadError } =
                   await supabaseClient.storage
-                     .from("white-noise-images") // Nama bucket foto white noise Anda
+                     .from("white-noise-images")
                      .upload(photoFileName, photoFile, {
                         cacheControl: "3600",
                      });
@@ -231,17 +267,26 @@ const ModalInsertKonten = ({
             if (!formData.isi) {
                throw new Error("Isi Edukasi wajib diisi.");
             }
+         } else if (tipeKonten === "video") {
+            if (!formData.link) {
+               throw new Error("URL Video wajib diisi.");
+            }
+            const generatedThumbnail = generateYoutubeThumbnail(formData.link);
+            if (!generatedThumbnail) {
+               throw new Error("URL video tidak valid.");
+            }
+            finalPhotoUrl = generatedThumbnail;
          }
 
-         // 2. Siapkan Data untuk onInsert (Database)
          const idField = {
             artikel: "idartikel",
             "white-noise": "idwhitenoise",
             edukasi: "idedukasi",
+            video: "idvideo",
          }[tipeKonten];
 
          const dataToSend = {
-            ...(editData ? { [idField]: editData[idField] } : {}), // Hanya sertakan ID jika sedang edit
+            ...(editData ? { [idField]: editData[idField] } : {}),
             ...(tipeKonten === "artikel" && {
                judulartikel: formData.judul,
                linkartikel: formData.link,
@@ -256,10 +301,15 @@ const ModalInsertKonten = ({
                juduledukasi: formData.judul,
                isiedukasi: formData.isi,
             }),
+            ...(tipeKonten === "video" && {
+               judulvideo: youtubeTitle, // Menggunakan judul yang diambil otomatis
+               linkvideo: formData.link,
+               fotovideo: finalPhotoUrl,
+            }),
          };
 
-         await onInsert(dataToSend); // Panggil callback untuk menyimpan ke database
-         onClose(); // Tutup modal setelah berhasil
+         await onInsert(dataToSend);
+         onClose();
       } catch (err) {
          console.error("Error saat submit:", err);
          setError(
@@ -268,7 +318,7 @@ const ModalInsertKonten = ({
             }`
          );
       } finally {
-         setLoading(false); // Selesai loading
+         setLoading(false);
       }
    };
 
@@ -305,14 +355,15 @@ const ModalInsertKonten = ({
             )}
 
             <form onSubmit={handleSubmit}>
-               {/* Input Judul - Pastikan 'name="judul"' ada di sini */}
-               <Input
-                  label="Judul"
-                  name="judul"
-                  value={formData.judul}
-                  onChange={handleInputChange}
-                  required
-               />
+               {tipeKonten !== "video" && (
+                  <Input
+                     label="Judul"
+                     name="judul"
+                     value={formData.judul}
+                     onChange={handleInputChange}
+                     required
+                  />
+               )}
 
                {tipeKonten === "artikel" && (
                   <>
@@ -323,7 +374,6 @@ const ModalInsertKonten = ({
                         onChange={handleInputChange}
                         required
                      />
-                     {/* Input Tipe File untuk Foto Artikel */}
                      <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                            Foto Artikel{" "}
@@ -336,14 +386,13 @@ const ModalInsertKonten = ({
                            accept="image/*"
                            className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                            onChange={handlePhotoFileChange}
-                           required={!editData || !formData.foto} // Wajib jika baru atau belum ada foto
+                           required={!editData || !formData.foto}
                         />
                         {photoFile && (
                            <p className="text-gray-500 text-xs mt-1">
                               File dipilih: {photoFile.name}
                            </p>
                         )}
-                        {/* Tampilkan URL foto yang sudah ada jika mode edit dan belum ada file baru dipilih */}
                         {editData && formData.foto && !photoFile && (
                            <p className="text-gray-500 text-xs mt-1">
                               Foto saat ini:{" "}
@@ -363,7 +412,6 @@ const ModalInsertKonten = ({
 
                {tipeKonten === "white-noise" && (
                   <>
-                     {/* Input Tipe File untuk Audio */}
                      <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                            File Audio{" "}
@@ -376,14 +424,13 @@ const ModalInsertKonten = ({
                            accept="audio/*"
                            className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                            onChange={handleAudioFileChange}
-                           required={!editData || !formData.audio} // Wajib jika baru atau belum ada audio
+                           required={!editData || !formData.audio}
                         />
                         {audioFile && (
                            <p className="text-gray-500 text-xs mt-1">
                               File dipilih: {audioFile.name}
                            </p>
                         )}
-                        {/* Tampilkan URL audio yang sudah ada jika mode edit dan belum ada file baru dipilih */}
                         {editData && formData.audio && !audioFile && (
                            <p className="text-gray-500 text-xs mt-1">
                               Audio saat ini:{" "}
@@ -399,7 +446,6 @@ const ModalInsertKonten = ({
                         )}
                      </div>
 
-                     {/* Input Tipe File untuk Foto White Noise */}
                      <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                            Foto White Noise{" "}
@@ -412,14 +458,13 @@ const ModalInsertKonten = ({
                            accept="image/*"
                            className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                            onChange={handlePhotoFileChange}
-                           required={!editData || !formData.foto} // Wajib jika baru atau belum ada foto
+                           required={!editData || !formData.foto}
                         />
                         {photoFile && (
                            <p className="text-gray-500 text-xs mt-1">
                               File dipilih: {photoFile.name}
                            </p>
                         )}
-                        {/* Tampilkan URL foto yang sudah ada jika mode edit dan belum ada file baru dipilih */}
                         {editData && formData.foto && !photoFile && (
                            <p className="text-gray-500 text-xs mt-1">
                               Foto saat ini:{" "}
@@ -445,6 +490,41 @@ const ModalInsertKonten = ({
                      onChange={handleInputChange}
                      required
                   />
+               )}
+               
+               {tipeKonten === "video" && (
+                  <>
+                     {youtubeTitle && (
+                        <div className="mb-4">
+                           <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Judul Video (Otomatis):
+                           </label>
+                           <p className="p-3 bg-gray-100 rounded-lg text-gray-700 font-semibold">
+                              {youtubeTitle}
+                           </p>
+                        </div>
+                     )}
+                     <Input
+                        label="URL Video (YouTube)"
+                        name="link"
+                        value={formData.link}
+                        onChange={handleInputChange}
+                        type="url"
+                        required
+                     />
+                     {(youtubeThumbnail || editData?.fotovideo) && (
+                        <div className="mb-4">
+                           <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Pratinjau Thumbnail:
+                           </label>
+                           <img
+                              src={youtubeThumbnail || editData.fotovideo}
+                              alt="YouTube Thumbnail"
+                              className="w-full h-auto object-cover rounded-lg shadow-md"
+                           />
+                        </div>
+                     )}
+                  </>
                )}
 
                <div className="flex items-center justify-end">

@@ -32,17 +32,17 @@ const LandingPage = () => {
             <a
                className="px-8 py-3 text-white font-semibold rounded-full shadow-lg hover:bg-gray-900 transition duration-300 ease-in-out transform hover:scale-105"
                style={{ backgroundColor: primaryColor }}
-               href="/autentikasi/login"
+               href="/mindbloom-home"
             >
                Masuk Sekarang
             </a>
-            <a
+            {/* <a
                className="px-8 py-3 bg-white text-gray-800 font-semibold rounded-full shadow-lg border border-gray-300 hover:bg-gray-100 transition duration-300 ease-in-out transform hover:scale-105"
                style={{ borderColor: lightTextColor, color: textColor }}
                href="/autentikasi/regis"
             >
                Daftar Akun Baru
-            </a>
+            </a> */}
          </div>
       </div>
    );
