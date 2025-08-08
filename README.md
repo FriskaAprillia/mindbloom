@@ -4,7 +4,7 @@
 
 ## 🚀 Fitur Utama
 
-- 🤖 **Chatbot Konseling**: Asisten AI yang siap mendengarkan dan memberi respon berdasarkan prinsip kesehatan mental positif.
+- 🤖 **Chatbot Konseling**: Asisten AI yang siap mendengarkan dan memberi respon berdasarkan prinsip kesehatan mental positif pengguna.
 - 📚 **Artikel Edukatif**: Baca berbagai topik mulai dari self-care, stres, burnout, hingga teknik mindfulness.
 - 🔊 **White Noise Player**: Dengarkan suara yang menenangkan seperti hujan, angin, dan lainnya untuk membantu relaksasi.
 - 🔐 **Login Aman**: Autentikasi menggunakan Supabase.
